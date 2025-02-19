@@ -1,20 +1,24 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import s from './ContactForm.module.css';
 import * as Yup from 'yup';
+import { useDispatch } from 'react-redux';
+import { addContact } from '../../redux/contactsSlice';
 
-const ContactForm = ({ addContact }) => {
+const ContactForm = () => {
   const initialValues = {
     name: '',
     number: '',
   };
+  const dispatch = useDispatch();
 
-  const handleSubmit = (values, actions) => {
+  const onSubmit = (values, option) => {
     const newContact = {
       id: crypto.randomUUID(),
-      ...values,
+      name: values.name,
+      number: values.number,
     };
-    addContact(newContact);
-    actions.resetForm();
+    dispatch(addContact(newContact));
+    option.resetForm();
   };
 
   const re = /^\+?\d{1,4}[-.\s]?\d{10,15}$/;
@@ -30,7 +34,7 @@ const ContactForm = ({ addContact }) => {
     <section className={s.formWrapper}>
       <Formik
         initialValues={initialValues}
-        onSubmit={handleSubmit}
+        onSubmit={onSubmit}
         validationSchema={applySchema}
       >
         {({ values }) => (
